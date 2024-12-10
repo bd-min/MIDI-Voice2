@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+          <style type="text/css">
+                 a:link { color: black; text-decoration: none;}
+                 a:visited { color: black; text-decoration: none;}
+                 a:hover { color: blue; text-decoration: underline;}
+          </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>MIDI-Voice Demo</title>
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous"></script>
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet">
+        <!-- Fonts CSS-->
+        <link rel="stylesheet" href="css/heading.css">
+        <link rel="stylesheet" href="css/body.css">
+        <script>
+          function createTable(dir, exp, audio, script, idx=1, row=3){
+
+              html = "<table class=\"table table-responsive align-content-center\" style=\"background-color: white; border-radius: 20px\">"
+              html +="<thead><tr><th colspan=\"5\" style=\"width: 40%\">"
+              html +="<div class=\"text-left\">"
+              html += "Script: <i>"
+              html += script["script"]
+              html +="</i></div>"
+              html +="<div class=\"text-left\">"
+              html += "\n(Pronunciation): <i>"
+              html += script["pronun"]
+              html +="</i></div>"
+              html += "</th></tr></thead>"
+              html +="<tbody><tr>"
+              for(var key in exp){
+                  if (idx % row == 0){
+                      html += "<tr>"    
+                  }
+                  html +="<td style=\"vertical-align: top;\"><p></p>"
+                  html +=key
+                  html +="<div class=\"text-center\"><audio"
+                  if (row>3){
+                      html+= " controls=\"controls\" style=\"width: 190px;\"><source src="
+                  } else {
+                      html+= " controls=\"controls\"><source src="
+                  }
+                  f = dir + "/" + exp[key] + ".wav"
+                  html += f                    
+                  html +=" type=\"audio/wav\" /></audio></div></td>"
+                  idx += 1
+                  if (idx % row == 0){
+                      html += "</tr>"    
+                  }
+              }
+              html +="</tr></tbody></table>"
+              return html
+          }
+      </script>
+    </head>
+    <body id="page-top">
+        <nav class="navbar navbar-expand-lg bg-secondary fixed-top" id="mainNav">
+            <div class="container"><a class="navbar-brand js-scroll-trigger" href="#page-top">MIDI-Voice</a>
+                <button class="navbar-toggler navbar-toggler-right font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">Menu <i class="fas fa-bars"></i></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#abstract">Abstact</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#ps">MIDI-Voice<br>Demo</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#mc">Seen Speaker<br>Reconstruction</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#zeroshot">Zero-shot Singing Voice<br>Style Transfer</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <header class="masthead bg-white text-left"> <!-- text-black 사용 가능 -->
+            <div class="container d-flex align-items-center flex-column">
+                <!-- Masthead Heading-->
+                <h1 class="masthead-heading mb-0 text-center">MIDI-Voice: Expressive Zero-shot Singing Voice Synthesis via MIDI-driven Priors</h1>
+                <!-- Masthead Subheading-->
+		        <p class="pre-wrap lead">&nbsp;</p>
+                <p class="pre-wrap masthead-subheading font-weight-light mb-0 font-italic">Dong-Min Byun, Sang-Hoon Lee, Ji-Sang Hwang, and Seong-Whan Lee</p>
+            </div>
+        </header>
+
+        <!-- Abstraction -->
+        <section class="page-section portfolio" id="abstract">
+            <div class="container">
+                <!-- Portfolio Section Heading-->
+                <div class="text-center">
+                    <h2 class="page-section-heading text-secondary mb-0 d-inline-block">Abstract</h2>
+                </div>
+                <!-- Icon Divider-->
+                <div class="divider-custom">
+                    <div class="divider-custom"></div>
+                </div>
+                <!-- Portfolio Grid Items-->
+                <div class="row justify-content-center">
+                    <div class="col-lg-12 ml-auto">
+                        <p class="pre-wrap lead">In this paper, we propose an approach for expressive singing voice generation and zero-shot singing voice synthesis (SVS). Recently, singing voice synthesis models have shown significant progress with generative models. However, previous SVS models inaccurately predict prior and fundamental frequency (F0) for unseen speakers, resulting in a low-quality generated singing voice. To address these issues, in this paper, we propose MIDI-Voice for expressive singing voice synthesis and robust zero-shot singing voice style transfer. We adopt a score-based diffusion model for singing voice synthesis and introduce a MIDI-based prior for better singing voice style adaptation. We first generate a MIDI-driven prior from the musical score, and this only includes the note information, not speaker information resulting in high-quality singing voice adaptation. Furthermore, we also propose a DDSP-based MIDI-style prior to synthesize a more expressive singing voice. The experimental results show that MIDI-Voice outperforms the previous models in synthesizing an expressive singing voice. We can observe the superiority in zero-shot singing voice style transfer performance.</p>
+                    </div>
+                    <div class="text-center">
+                        <br>
+                        <img width="80%" src="./assets/figure/overall_arch.png">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Proposed Model - MIDI-Voice -->
+        <section class="page-section bg-primary text-white mb-0" id="ps">
+            <div class="container">
+                <!-- About Section Heading-->
+                <div class="text-center">
+                    <h2 class="page-section-heading d-inline-block text-white">MIDI-Voice</h2>
+                </div>
+                <br>
+                <!-- Sample of MIDI-Voice -->
+                <div class="row">
+                    <div id="div1" class="col-lg-auto ml-auto">
+                        <script>
+                            dir = "audio/proposed_model"
+                            exp = {"Ground-Truth": "sample_gt",
+                                   "BigVGAN (Recon.)": "sampl_vocoded",
+                                   "MIDI-Voice": "sample_msp"}
+                            audios = {
+                                "샘플명": {"script": "이제 돌아갈 수 없는데",
+                                          "pronun": "ije doragal su eopsneunde "},
+                            }
+                            for(var audio in audios){
+                                div = document.getElementById("div1")
+                                script=audios[audio]
+                                html = createTable(dir, exp, audio, script, 0, row=4)
+                                div.insertAdjacentHTML("afterend", html);
+                            }
+			
+                        </script>
+                      
+                    </div>
+		    
+                </div>
+            </div>
+        </section>
+	<section class="page-section bg-info text-white mb-0" id="ds">
+          <div class="container">
+            <div class="text-center">
+              <h2 class="page-section-heading d-inline-block">MIDI-Voice</h2>
+              <p class="pre-wrap lead">Mel spectrogram by diffusion step</p>
+            </div>
+		 <div class="divider-custom divider-light">
+	              </div>
+	              <div class="row">
+	                  <div class="col-lg-12 ml-auto">
+	                    <table class="table table-responsive align-content-center" style="background-color: rgba(255, 255, 255, 0.993); border-radius: 20px">
+		            <thead><tr>
+		                        <th style="width:100%">MIDI-driven prior</th>
+		                        <img src="audio/mdp_gif/midi_to_voice.gif" style="max-width: 50%; height: 25%; display: block; margin: auto; margin-bottom: 20px;">
+		            </tr></thead>
+		                      <tbody>
+		                        <tr>
+					  <td rowspan="6" style="vertical-align: top;"><p> Step 0 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/0.wav " type="audio/wav"></audio>
+		                          </td>
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 1 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/1.wav " type="audio/wav"></audio>
+		                          </td>
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 10  </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/10.wav" type="audio/wav"></audio>
+		                          </td>
+		
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 20 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/20.wav" type="audio/wav"></audio>
+		                          </td>
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 30 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/30.wav" type="audio/wav"></audio>
+		                          </td>
+					  <td rowspan="6" style="vertical-align: top;"><p> Step 50 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/50.wav" type="audio/wav"></audio>
+		                          </td>
+					  <td rowspan="6" style="vertical-align: top;"><p> Step 100 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/mdp_gif/100.wav" type="audio/wav"></audio>
+		                          </td>
+		                        </tr>
+		                        
+		                      </tbody>
+                          <thead><tr>
+		                        <th style="width:100%">MIDI-style prior</th>
+		            </tr></thead>
+		                      <tbody>
+		                        <tr>
+					  <td rowspan="6" style="vertical-align: top;"><p> Step 0 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/0.wav " type="audio/wav"></audio>
+		                          </td>
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 1 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/1.wav " type="audio/wav"></audio>
+		                          </td>
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 10  </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/10.wav" type="audio/wav"></audio>
+		                          </td>
+		
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 20 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/20.wav" type="audio/wav"></audio>
+		                          </td>
+		                          <td rowspan="6" style="vertical-align: top;"><p> Step 30 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/30.wav" type="audio/wav"></audio>
+		                          </td>
+					                    <td rowspan="6" style="vertical-align: top;"><p> Step 50 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/50.wav" type="audio/wav"></audio>
+		                          </td>
+					                    <td rowspan="6" style="vertical-align: top;"><p> Step 100 </p>
+		                            <audio id="player" controls style="width: 240px"><source src="audio/msp_gif/100.wav" type="audio/wav"></audio>
+		                          </td>
+		                        </tr>
+		                        
+		                      </tbody>
+				    </table>
+                  </div>
+                </div>
+            </div>
+				    <
+        </section>
+
+	    
+        <!-- Models Comparison -->
+        <section class="page-section bg-info text-white mb-0" id="mc">
+            <div class="container">
+                <!-- About Section Heading-->
+                <div class="text-center">
+                    <h2 class="page-section-heading d-inline-block text-white">Seen Speaker Singing Voice Synthesis</h2>
+                    <p class="pre-wrap lead">All speakers are seen during training</p>
+                </div>
+                <br>
+                <!-- Sample of Comparison Models-->
+                <div class="row">
+                  <div id="div2" class="col-lg-auto ml-auto">
+                      <script>
+                          dir = "audio/compare_model"
+                          exp = {"GT": "sample_gt",
+                                 "BigVGAN": "sample_vocoder",
+                                 "VISinger": "sample_vi",
+                                 "Grad-TTS": "sample_ddp",
+                                 "MIDI-Voice (MIDI-driven)": "sample_mdp",
+                                 "MIDI-Voice (MIDI-style)": "sample_msp",
+                              }
+                          audios = {
+                              "샘플명": {"script": "시간이 해결해 주나 봐",
+                                         "pronun": "sigani haegyeolhae juna bwa "},
+                          }
+                          for(var audio in audios){
+                              div = document.getElementById("div2")
+                              script=audios[audio]
+                              html = createTable(dir, exp, audio, script, 2, row=4)
+                              // console.log(html)
+                              div.insertAdjacentHTML("afterend", html);
+                          }
+                      </script>
+                  </div>
+              </div>
+            </div>
+        </section>
+
+        <!-- Zero-shot Singing Voice Style Transfer -->
+        <section class="page-section bg-info text-white mb-0" id="zeroshot">
+          <div class="container">
+            <div class="text-center">
+              <h2 class="page-section-heading d-inline-block">Zero-shot Singing Voice Style transfer</h2>
+              <p class="pre-wrap lead">All speakers are unseen during training</p>
+            </div>
+
+            <div class="divider-custom divider-light">
+              </div>
+              <div class="row">
+                  <div class="col-lg-12 ml-auto">
+                    <table class="table table-responsive align-content-center" style="background-color: rgba(255, 255, 255, 0.993); border-radius: 20px">
+                      <thead><tr>
+                        <th style="width:8%">Source Singing Voice</th>
+                        <th style="width:8%">Target Speaker</th>
+                        <th style="width: 23%"> Generted</th>
+                        <th style="width: 22%">         </th>
+                        <th style="width: 1%">         </th>
+                      </tr></thead>
+                      <tr>
+                        <th colspan="5">Script: 언젠가 그 미소 내게 닿을 수 있나요<br>(Pronunciation): eonjenga geu miso naege daheul su issnayo </th>
+                      </tr>
+                      <!-- Sample of Zero-shot Style Transfer -->
+                      
+                      <tbody>
+                        <tr>
+                          <td rowspan="6" style="vertical-align: top;"><p> GT <br> spk90 </p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_1.wav " type="audio/wav"></audio>
+                          </td>
+                          <td rowspan="6" style="vertical-align: top;"><p> GT <br> s10_m </p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/target_1.wav" type="audio/wav"></audio>
+                          </td>
+
+                          <td><p>VISinger<br><br></p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_1_vi.wav" type="audio/wav"></audio>
+                          </td>
+                          <td><p>Grad-TTS<br><br></p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_1_ddp.wav" type="audio/wav"></audio>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><p>MIDI-Voice (MIDI-driven)</p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_1_mdp.wav" type="audio/wav"></audio>
+                          </td>  
+                          <td><p>MIDI-Voice (MIDI-style)</p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_1_msp.wav" type="audio/wav"></audio>
+                          </td><td></td>
+                        </tr>
+                      </tbody>
+                      <tr>
+                        <th colspan="5">Script: 언젠가 그 미소 내게 닿을 수 있나요<br>(Pronunciation): eonjenga geu miso naege daheul su issnayo </th>
+                      </tr>
+		      <tbody>
+                        <tr>
+                          <td rowspan="6" style="vertical-align: top;"><p> GT <br> spk90 </p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_1.wav " type="audio/wav"></audio>
+			  </td>
+                          <td rowspan="6" style="vertical-align: top;"><p> GT <br> s05_f </p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/target_2.wav" type="audio/wav"></audio>
+                          </td>
+
+                          <td><p>VISinger<br><br></p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_2_vi.wav" type="audio/wav"></audio>
+                          </td>
+                          <td><p>Grad-TTS<br><br></p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_2_ddp.wav" type="audio/wav"></audio>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><p>MIDI-Voice (MIDI-driven)</p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_2_mdp.wav" type="audio/wav"></audio>
+                          </td>  
+                          <td><p>MIDI-Voice (MIDI-style)</p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_2_msp.wav" type="audio/wav"></audio>
+                          </td><td></td>
+                        </tr>
+                      </tbody>
+                      <tr>
+                        <th colspan="5">Script: 물어봐 난 누굴까 워어어 열심히 걸어가다 보면<br>(Pronunciation): mureobwa nan nugunga woeoeo yeolsimhi georeogada bomyeon  </th>
+                      </tr>
+		      <tbody>
+                        <tr>
+                          <td rowspan="6" style="vertical-align: top;"><p> GT <br> spk81 </p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_3.wav " type="audio/wav"></audio>
+                          </td>
+                          <td rowspan="6" style="vertical-align: top;"><p> GT <br> s02_m </p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/target_3.wav" type="audio/wav"></audio>
+                          </td>
+
+                          <td><p>VISinger<br><br></p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_3_vi.wav" type="audio/wav"></audio>
+                          </td>
+                          <td><p>Grad-TTS<br><br></p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_3_ddp.wav" type="audio/wav"></audio>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><p>MIDI-Voice (MIDI-driven)</p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_3_mdp.wav" type="audio/wav"></audio>
+                          </td>  
+                          <td><p>MIDI-Voice (MIDI-style)</p>
+                            <audio id="player" controls style="width: 240px"><source src="audio/Zero-shot Singing Voice Style Transfer/source_3_msp.wav" type="audio/wav"></audio>
+                          </td><td></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+            </div>
+        </section>
+	    
+ 	
+
+	
+
+        <div class="scroll-to-top d-lg-none position-fixed"><a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top"><i class="fa fa-chevron-up"></i></a></div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script src="js/scripts.js"></script>
+        <!-- Bootstrap slider JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js" integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA==" crossorigin="anonymous"></script>
+        <!-- slider JS -->
+        <script type="text/javascript">
+        </script>
+    </body>
+</html>
